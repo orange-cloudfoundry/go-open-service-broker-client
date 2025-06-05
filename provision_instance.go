@@ -35,8 +35,9 @@ type provisionRequestBody struct {
 }
 
 type provisionSuccessResponseBody struct {
-	DashboardURL *string `json:"dashboard_url"`
-	Operation    *string `json:"operation"`
+	DashboardURL *string                  `json:"dashboard_url"`
+	Metadata     *ServiceInstanceMetadata `json:"metadata,omitempty"`
+	Operation    *string                  `json:"operation"`
 }
 
 func (c *client) ProvisionInstance(r *ProvisionRequest) (*ProvisionResponse, error) {
@@ -103,6 +104,7 @@ func (c *client) ProvisionInstance(r *ProvisionRequest) (*ProvisionResponse, err
 		userResponse := &ProvisionResponse{
 			Async:        true,
 			DashboardURL: responseBodyObj.DashboardURL,
+			Metadata:     responseBodyObj.Metadata,
 			OperationKey: opPtr,
 		}
 

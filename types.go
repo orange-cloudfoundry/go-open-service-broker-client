@@ -104,6 +104,9 @@ type Plan struct {
 	// Bindable indicates whether the plan is bindable and overrides the value
 	// of the Service.Bindable field if set. Optional; defaults to unset.
 	Bindable *bool `json:"bindable,omitempty"`
+	// BindingRotatable indicates whether a service binding of that plan
+	// supports binding rotation. Optional; defaults to unset
+	BindingRotatable *bool `json:"binding_rotatable,omitempty"`
 	// Metadata is a blob of information about the plan, meant to be user-
 	// facing content and display instructions. Metadata may contain
 	// platform-conventional values. Optional.
@@ -138,6 +141,11 @@ type Plan struct {
 type MaintenanceInfo struct {
 	Version     string `json:"version"`
 	Description string `json:"description,omitempty"`
+}
+
+type ServiceInstanceMetadata struct {
+	Labels     map[string]interface{} `json:"labels,omitempty"`
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 }
 
 // Schemas requires a client API version >=2.13.
@@ -248,6 +256,9 @@ type ProvisionResponse struct {
 	// DashboardURL is the URL of a web-based management user interface for
 	// the service instance.
 	DashboardURL *string `json:"dashboard_url,omitempty"`
+	// Metadata is an optional object containing metadata for the service
+	// instance.
+	Metadata *ServiceInstanceMetadata `json:"metadata,omitempty"`
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
 	OperationKey *OperationKey `json:"operation,omitempty"`
@@ -324,6 +335,9 @@ type UpdateInstanceResponse struct {
 	// DashboardURL is the URL of a web-based management user interface for
 	// the service instance.
 	DashboardURL *string `json:"dashboard_url,omitempty"`
+	// Metadata is an optional object containing metadata for the service
+	// instance.
+	Metadata *ServiceInstanceMetadata `json:"metadata,omitempty"`
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
 	OperationKey *OperationKey `json:"operation,omitempty"`
@@ -368,6 +382,9 @@ type GetInstanceResponse struct {
 	// DashboardURL is the URL of a web-based management user interface for
 	// the service instance.
 	DashboardURL string `json:"dashboard_url,omitempty"`
+	// Metadata is an optional object containing metadata for the service
+	// instance.
+	Metadata ServiceInstanceMetadata `json:"metadata,omitempty"`
 	// Parameters is a set of configuration options for the instance.
 	Parameters map[string]interface{} `json:"parameters,omitempty"`
 }
@@ -455,6 +472,11 @@ const (
 	StateFailed     LastOperationState = "failed"
 )
 
+type BindingMetadata struct {
+	ExpiresAt   string `json:"expires_at,omitempty"`
+	RenewBefore string `json:"renew_before,omitempty"`
+}
+
 // BindRequest represents a request to create a new binding to an instance of
 // a service.
 type BindRequest struct {
@@ -539,16 +561,19 @@ type BindResponse struct {
 	// CF-specific. May only be supplied by a service that declares a
 	// requirement for the 'volume_mount' permission.
 	VolumeMounts []interface{} `json:"volume_mounts,omitempty"`
-	// OperationKey requires a client API version >= 2.14.
-	//
-	// OperationKey is an extra identifier supplied by the broker to identify
-	// asynchronous operations.
-	OperationKey *OperationKey `json:"operation,omitempty"`
 	// Endpoints requires alpha features to be enabled
 	//
 	// The network endpoints that the Application uses to connect to the
 	// Service Instance.
 	Endpoints *[]Endpoint `json:"endpoints,omitempty"`
+	// Metadata is an optional object containing metadata for the service
+	// binding.
+	Metadata *BindingMetadata `json:"metadata,omitempty"`
+	// OperationKey requires a client API version >= 2.14.
+	//
+	// OperationKey is an extra identifier supplied by the broker to identify
+	// asynchronous operations.
+	OperationKey *OperationKey `json:"operation,omitempty"`
 }
 
 // UnbindRequest represents a request to unbind a particular binding.
@@ -623,4 +648,28 @@ type GetBindingResponse struct {
 	// The network endpoints that the Application uses to connect to the
 	// Service Instance.
 	Endpoints *[]Endpoint `json:"endpoints,omitempty"`
+	// Metadata is an optional object containing metadata for the service
+	// binding.
+	Metadata *BindingMetadata `json:"metadata,omitempty"`
+}
+
+type RotatebindingRequest struct {
+	// InstanceID is the ID of the instance to update.
+	InstanceID string `json:"instance_id"`
+	// BindingId is the ID of the binding to rotate.
+	BindingID string `json:"binding_id"`
+	// AcceptsIncomplete indicates whether the client can accept asynchronous
+	// updating of an instance. If the broker cannot fulfill a request
+	// synchronously and AcceptsIncomplete is set to false, the broker will
+	// reject the request. A broker may choose to response to a request with
+	// AcceptsIncomplete set to true either synchronously or asynchronously.
+	AcceptsIncomplete bool `json:"accepts_incomplete"`
+	// PredecessorBindingId is the ID of the non-expired binding of the same
+	// service instance.
+	PredecessorBindingID string `json:"predecessor_binding_id"`
+	// OriginatingIdentity requires a client API version >= 2.13.
+	//
+	// OriginatingIdentity is the identity on the platform of the user making
+	// this request.
+	OriginatingIdentity *OriginatingIdentity `json:"originatingIdentity,omitempty"`
 }

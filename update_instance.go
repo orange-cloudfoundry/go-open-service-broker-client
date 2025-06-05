@@ -32,8 +32,9 @@ type updateInstanceRequestBody struct {
 }
 
 type updateInstanceResponseBody struct {
-	DashboardURL *string `json:"dashboard_url"`
-	Operation    *string `json:"operation"`
+	DashboardURL *string                  `json:"dashboard_url"`
+	Metadata     *ServiceInstanceMetadata `json:"metadata,omitempty"`
+	Operation    *string                  `json:"operation"`
 }
 
 func (c *client) UpdateInstance(r *UpdateInstanceRequest) (*UpdateInstanceResponse, error) {
@@ -78,6 +79,7 @@ func (c *client) UpdateInstance(r *UpdateInstanceRequest) (*UpdateInstanceRespon
 		userResponse := &UpdateInstanceResponse{
 			Async:        false,
 			OperationKey: nil,
+			Metadata:     responseBodyObj.Metadata,
 		}
 		if c.APIVersion.AtLeast(Version2_14()) {
 			userResponse.DashboardURL = responseBodyObj.DashboardURL
@@ -106,6 +108,7 @@ func (c *client) UpdateInstance(r *UpdateInstanceRequest) (*UpdateInstanceRespon
 		userResponse := &UpdateInstanceResponse{
 			Async:        true,
 			OperationKey: opPtr,
+			Metadata:     responseBodyObj.Metadata,
 		}
 		if c.APIVersion.AtLeast(Version2_14()) {
 			userResponse.DashboardURL = responseBodyObj.DashboardURL

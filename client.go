@@ -25,12 +25,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"k8s.io/klog/v2"
 )
 
@@ -41,6 +41,8 @@ const (
 	// OriginatingIdentityHeader is the header associated with originating
 	// identity.
 	OriginatingIdentityHeader = "X-Broker-API-Originating-Identity"
+	// RequestIdentityFeader is the header associated with request identity
+	RequestIdentityheader = "X-Broker-API-Request-Identity"
 	// PollingDelayHeader is the header used by the brokers to tell the clients
 	// how many seconds they should wait before retrying the polling
 	PollingDelayHeader = "Retry-After"
@@ -187,6 +189,9 @@ func (c *client) prepareAndDo(method, URL string, params map[string]string, body
 		}
 	}
 
+	requestId := uuid.New()
+	request.Header.Set(RequestIdentityheader, requestId.String())
+
 	if c.APIVersion.AtLeast(Version2_13()) && originatingIdentity != nil {
 		headerValue, err := buildOriginatingIdentityHeaderValue(originatingIdentity)
 		if err != nil {
@@ -217,7 +222,7 @@ func (c *client) doRequest(request *http.Request) (*http.Response, error) {
 // unmarshalResponse unmarshals the response body of the given response into
 // the given object or returns an error.
 func (c *client) unmarshalResponse(response *http.Response, obj interface{}) error {
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
@@ -309,7 +314,7 @@ func drainReader(reader io.Reader) error {
 	if reader == nil {
 		return nil
 	}
-	_, drainError := io.Copy(ioutil.Discard, io.LimitReader(reader, 4096))
+	_, drainError := io.Copy(io.Discard, io.LimitReader(reader, 4096))
 	return drainError
 }
 

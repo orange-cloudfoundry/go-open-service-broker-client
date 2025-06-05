@@ -25,67 +25,23 @@ import (
 
 // internal message body types
 
-type bindRequestBody struct {
-	ServiceID    string                 `json:"service_id"`
-	PlanID       string                 `json:"plan_id"`
-	Parameters   map[string]interface{} `json:"parameters,omitempty"`
-	BindResource map[string]interface{} `json:"bind_resource,omitempty"`
-	Context      map[string]interface{} `json:"context,omitempty"`
+type rotateBindingRequestBody struct {
+	PredecessorBindingId *string `json:"predecessor_binding_id"`
 }
 
-type bindSuccessResponseBody struct {
-	Credentials     map[string]interface{} `json:"credentials"`
-	SyslogDrainURL  *string                `json:"syslog_drain_url"`
-	RouteServiceURL *string                `json:"route_service_url"`
-	VolumeMounts    []interface{}          `json:"volume_mounts"`
-	Endpoints       *[]Endpoint            `json:"endpoints"`
-	Metadata        *BindingMetadata       `json:"metadata,omitempty"`
-	Operation       *string                `json:"operation"`
-}
-
-const (
-	bindResourceAppGUIDKey = "app_guid"
-	bindResourceRouteKey   = "route"
-)
-
-func (c *client) Bind(r *BindRequest) (*BindResponse, error) {
-	if r.AcceptsIncomplete {
-		if err := c.validateClientVersionIsAtLeast(Version2_14()); err != nil {
-			return nil, AsyncBindingOperationsNotAllowedError{
-				reason: err.Error(),
-			}
-		}
-	}
-
-	if err := validateBindRequest(r); err != nil {
+func (c *client) RotateBinding(r *RotatebindingRequest) (*BindResponse, error) {
+	if err := validateRotateBindingRequest(r); err != nil {
 		return nil, err
 	}
 
 	fullURL := fmt.Sprintf(bindingURLFmt, c.URL, r.InstanceID, r.BindingID)
-
 	params := map[string]string{}
 	if r.AcceptsIncomplete {
 		params[AcceptsIncomplete] = "true"
 	}
 
-	requestBody := &bindRequestBody{
-		ServiceID:  r.ServiceID,
-		PlanID:     r.PlanID,
-		Parameters: r.Parameters,
-	}
-
-	if c.APIVersion.AtLeast(Version2_13()) {
-		requestBody.Context = r.Context
-	}
-
-	if r.BindResource != nil {
-		requestBody.BindResource = map[string]interface{}{}
-		if r.BindResource.AppGUID != nil {
-			requestBody.BindResource[bindResourceAppGUIDKey] = *r.BindResource.AppGUID
-		}
-		if r.BindResource.Route != nil {
-			requestBody.BindResource[bindResourceRouteKey] = *r.BindResource.Route
-		}
+	requestBody := &rotateBindingRequestBody{
+		PredecessorBindingId: &r.PredecessorBindingID,
 	}
 
 	response, err := c.prepareAndDo(http.MethodPut, fullURL, params, requestBody, r.OriginatingIdentity)
@@ -142,28 +98,23 @@ func (c *client) Bind(r *BindRequest) (*BindResponse, error) {
 			}
 			userResponse.Async = true
 		}
-
 		return userResponse, nil
 	default:
 		return nil, c.handleFailureResponse(response)
 	}
 }
 
-func validateBindRequest(request *BindRequest) error {
-	if request.BindingID == "" {
-		return required("bindingID")
-	}
-
+func validateRotateBindingRequest(request *RotatebindingRequest) error {
 	if request.InstanceID == "" {
 		return required("instanceID")
 	}
 
-	if request.ServiceID == "" {
+	if request.BindingID == "" {
 		return required("serviceID")
 	}
 
-	if request.PlanID == "" {
-		return required("planID")
+	if request.PredecessorBindingID == "" {
+		return required("predecessorBindingID")
 	}
 
 	return nil
