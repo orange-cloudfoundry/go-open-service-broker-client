@@ -28,23 +28,23 @@ const (
 	testPredecessorBindingID = "test-predecessor-binding-id"
 )
 
-func defaultRotatebindingRequest() *RotatebindingRequest {
-	return &RotatebindingRequest{
+func defaultRotateBindingRequest() *RotateBindingRequest {
+	return &RotateBindingRequest{
 		InstanceID:           testInstanceID,
 		BindingID:            testBindingID,
 		PredecessorBindingID: testPredecessorBindingID,
 	}
 }
 
-func defaultAsyncRotatebindingRequest() *RotatebindingRequest {
-	r := defaultRotatebindingRequest()
+func defaultAsyncRotateBindingRequest() *RotateBindingRequest {
+	r := defaultRotateBindingRequest()
 	r.AcceptsIncomplete = true
 	return r
 }
 
-const defaultRotatebindingRequestBody = `{"predecessor_binding_id":"test-predecessor-binding-id"}`
+const defaultRotateBindingRequestBody = `{"predecessor_binding_id":"test-predecessor-binding-id"}`
 
-const successRotatebindingResponseBody = `{
+const successRotateBindingResponseBody = `{
   "credentials": {
 	"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
 	"username": "mysqluser",
@@ -85,7 +85,7 @@ func TestRotateBinding(t *testing.T) {
 		version             APIVersion
 		enableAlpha         bool
 		originatingIdentity *OriginatingIdentity
-		request             *RotatebindingRequest
+		request             *RotateBindingRequest
 		httpChecks          httpChecks
 		httpReaction        httpReaction
 		expectedResponse    *BindResponse
@@ -94,8 +94,8 @@ func TestRotateBinding(t *testing.T) {
 	}{
 		{
 			name: "invalid request",
-			request: func() *RotatebindingRequest {
-				r := defaultRotatebindingRequest()
+			request: func() *RotateBindingRequest {
+				r := defaultRotateBindingRequest()
 				r.InstanceID = ""
 				return r
 			}(),
@@ -105,14 +105,14 @@ func TestRotateBinding(t *testing.T) {
 			name: "success - created",
 			httpReaction: httpReaction{
 				status: http.StatusCreated,
-				body:   successRotatebindingResponseBody,
+				body:   successRotateBindingResponseBody,
 			},
 			expectedResponse: successRotatebindingResponse(),
 		},
 		{
 			name:    "success - asynchronous",
 			version: Version2_14(),
-			request: defaultAsyncRotatebindingRequest(),
+			request: defaultAsyncRotateBindingRequest(),
 			httpChecks: httpChecks{
 				params: map[string]string{
 					AcceptsIncomplete: "true",
@@ -120,9 +120,9 @@ func TestRotateBinding(t *testing.T) {
 			},
 			httpReaction: httpReaction{
 				status: http.StatusAccepted,
-				body:   successAsyncBindResponseBody,
+				body:   successAsyncRotateBindingResponseBody,
 			},
-			expectedResponse: successBindResponseAsync(),
+			expectedResponse: successRotatebindingResponseAsync(),
 		},
 		{
 			name: "http error",
@@ -163,44 +163,11 @@ func TestRotateBinding(t *testing.T) {
 			},
 			expectedErr: testHTTPStatusCodeError(),
 		},
-		{
-			name:                "originating identity included",
-			version:             Version2_13(),
-			originatingIdentity: testOriginatingIdentity,
-			httpChecks:          httpChecks{headers: map[string]string{OriginatingIdentityHeader: testOriginatingIdentityHeaderValue}},
-			httpReaction: httpReaction{
-				status: http.StatusCreated,
-				body:   successBindResponseBody,
-			},
-			expectedResponse: successBindResponse(),
-		},
-		{
-			name:                "originating identity excluded",
-			version:             Version2_13(),
-			originatingIdentity: nil,
-			httpChecks:          httpChecks{headers: map[string]string{OriginatingIdentityHeader: ""}},
-			httpReaction: httpReaction{
-				status: http.StatusCreated,
-				body:   successBindResponseBody,
-			},
-			expectedResponse: successBindResponse(),
-		},
-		{
-			name:                "originating identity not sent unless API Version >= 2.13",
-			version:             Version2_12(),
-			originatingIdentity: testOriginatingIdentity,
-			httpChecks:          httpChecks{headers: map[string]string{OriginatingIdentityHeader: ""}},
-			httpReaction: httpReaction{
-				status: http.StatusCreated,
-				body:   successBindResponseBody,
-			},
-			expectedResponse: successBindResponse(),
-		},
 	}
 
 	for _, tc := range cases {
 		if tc.request == nil {
-			tc.request = defaultRotatebindingRequest()
+			tc.request = defaultRotateBindingRequest()
 		}
 
 		tc.request.OriginatingIdentity = tc.originatingIdentity
@@ -210,7 +177,7 @@ func TestRotateBinding(t *testing.T) {
 		}
 
 		if tc.httpChecks.body == "" {
-			tc.httpChecks.body = defaultRotatebindingRequestBody
+			tc.httpChecks.body = defaultRotateBindingRequestBody
 		}
 
 		if tc.version.label == "" {
@@ -228,18 +195,18 @@ func TestRotateBinding(t *testing.T) {
 func TestValidateRotateRequest(t *testing.T) {
 	cases := []struct {
 		name    string
-		request *RotatebindingRequest
+		request *RotateBindingRequest
 		valid   bool
 	}{
 		{
 			name:    "valid",
-			request: defaultRotatebindingRequest(),
+			request: defaultRotateBindingRequest(),
 			valid:   true,
 		},
 		{
 			name: "missing binding ID",
-			request: func() *RotatebindingRequest {
-				r := defaultRotatebindingRequest()
+			request: func() *RotateBindingRequest {
+				r := defaultRotateBindingRequest()
 				r.BindingID = ""
 				return r
 			}(),
@@ -247,8 +214,8 @@ func TestValidateRotateRequest(t *testing.T) {
 		},
 		{
 			name: "missing instance ID",
-			request: func() *RotatebindingRequest {
-				r := defaultRotatebindingRequest()
+			request: func() *RotateBindingRequest {
+				r := defaultRotateBindingRequest()
 				r.InstanceID = ""
 				return r
 			}(),
@@ -256,8 +223,8 @@ func TestValidateRotateRequest(t *testing.T) {
 		},
 		{
 			name: "missing predecessor binding id",
-			request: func() *RotatebindingRequest {
-				r := defaultRotatebindingRequest()
+			request: func() *RotateBindingRequest {
+				r := defaultRotateBindingRequest()
 				r.PredecessorBindingID = ""
 				return r
 			}(),

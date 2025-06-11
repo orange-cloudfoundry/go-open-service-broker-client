@@ -653,7 +653,7 @@ type GetBindingResponse struct {
 	Metadata *BindingMetadata `json:"metadata,omitempty"`
 }
 
-type RotatebindingRequest struct {
+type RotateBindingRequest struct {
 	// InstanceID is the ID of the instance to update.
 	InstanceID string `json:"instance_id"`
 	// BindingId is the ID of the binding to rotate.

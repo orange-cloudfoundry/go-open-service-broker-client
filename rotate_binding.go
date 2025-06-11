@@ -29,7 +29,7 @@ type rotateBindingRequestBody struct {
 	PredecessorBindingId *string `json:"predecessor_binding_id"`
 }
 
-func (c *client) RotateBinding(r *RotatebindingRequest) (*BindResponse, error) {
+func (c *client) RotateBinding(r *RotateBindingRequest) (*BindResponse, error) {
 	if err := validateRotateBindingRequest(r); err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func (c *client) RotateBinding(r *RotatebindingRequest) (*BindResponse, error) {
 	}
 }
 
-func validateRotateBindingRequest(request *RotatebindingRequest) error {
+func validateRotateBindingRequest(request *RotateBindingRequest) error {
 	if request.InstanceID == "" {
 		return required("instanceID")
 	}
