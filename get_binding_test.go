@@ -36,6 +36,16 @@ const (
     {"host": "c-beam.alpha.city", "ports": [8080, 8443], "protocol": "tcp"}
   ]
 }`
+
+	okBindingWithMetadataBytes = `{
+	"credentials": {
+	  "test-key": "foo"
+	},
+	"metadata": {
+	  "expires_at": "2100-01-05T12:12:12.0Z",
+	  "renew_before": "2100-01-01T12:12:12.0Z"
+	}
+  }`
 )
 
 func defaultGetBindingRequest() *GetBindingRequest {
@@ -52,6 +62,19 @@ func okGetBindingResponse() *GetBindingResponse {
 	}
 	return response
 }
+
+func okGetBindingResponseWithMetadata() *GetBindingResponse {
+	return &GetBindingResponse{
+		Credentials: map[string]interface{}{
+			"test-key": "foo",
+		},
+		Metadata: &BindingMetadata{
+			ExpiresAt:   "2100-01-05T12:12:12.0Z",
+			RenewBefore: "2100-01-01T12:12:12.0Z",
+		},
+	}
+}
+
 func okGetBindingEndpointResponse() *GetBindingResponse {
 	response := okGetBindingResponse()
 	response.Endpoints = &[]Endpoint{
@@ -82,6 +105,14 @@ func TestGetBinding(t *testing.T) {
 				body:   okBindingBytes,
 			},
 			expectedResponse: okGetBindingResponse(),
+		},
+		{
+			name: "success with metadata",
+			httpReaction: httpReaction{
+				status: http.StatusOK,
+				body:   okBindingWithMetadataBytes,
+			},
+			expectedResponse: okGetBindingResponseWithMetadata(),
 		},
 		{
 			name: "http error",

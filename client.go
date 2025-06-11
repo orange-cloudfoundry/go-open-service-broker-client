@@ -147,6 +147,7 @@ var _ Client = &client{}
 // PollLastOperation: poll_last_operation.go
 // Bind: bind.go
 // Unbind: unbind.go
+// RotateBinding: rotate_binding.go
 
 const (
 	contentType = "Content-Type"

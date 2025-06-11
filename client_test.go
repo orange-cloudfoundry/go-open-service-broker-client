@@ -20,10 +20,11 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 const malformedResponse = `{`
@@ -111,6 +112,13 @@ func doHTTP(t *testing.T, name string, checks httpChecks, reaction httpReaction)
 			}
 		}
 
+		// Request identity header should always be defined with a uuid
+		identityValue := request.Header.Get(RequestIdentityheader)
+		if err := uuid.Validate(identityValue); err != nil {
+			t.Errorf("%v: unexpected value for request identity header %s; expected uuid, got %v", name, RequestIdentityheader, identityValue)
+			return nil, errWalkingGhost
+		}
+
 		for k, v := range checks.params {
 			actualValue := request.URL.Query().Get(k)
 			if e, a := v, actualValue; e != a {
@@ -122,7 +130,7 @@ func doHTTP(t *testing.T, name string, checks httpChecks, reaction httpReaction)
 		var bodyBytes []byte
 		if request.Body != nil {
 			var err error
-			bodyBytes, err = ioutil.ReadAll(request.Body)
+			bodyBytes, err = io.ReadAll(request.Body)
 			if err != nil {
 				t.Errorf("%v: error reading request body bytes: %v", name, err)
 				return nil, errWalkingGhost

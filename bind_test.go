@@ -80,6 +80,21 @@ const successBindResponseBodyWithEndpoints = `{
   ]
 }`
 
+const successBindResponseBodyWithMetadata = `{
+  "credentials": {
+	"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
+	"username": "mysqluser",
+	"password": "pass",
+	"host": "mysqlhost",
+	"port": 3306,
+	"database": "dbname"
+  },
+  "metadata": {
+	"expires_at": "2100-01-05T12:12:12.0Z",
+	"renew_before": "2100-01-01T12:12:12.0Z"
+  }
+}`
+
 const successAsyncBindResponseBody = `{
   "operation": "test-operation-key"
 }`
@@ -123,6 +138,23 @@ func successBindResponseWithEndpoints() *BindResponse {
 				Ports:    []uint16{80, 4816},
 				Protocol: (*EndpointProtocol)(strPtr("all")),
 			},
+		},
+	}
+}
+
+func successBindResponseWithMetadata() *BindResponse {
+	return &BindResponse{
+		Credentials: map[string]interface{}{
+			"uri":      "mysql://mysqluser:pass@mysqlhost:3306/dbname",
+			"username": "mysqluser",
+			"password": "pass",
+			"host":     "mysqlhost",
+			"port":     float64(3306),
+			"database": "dbname",
+		},
+		Metadata: &BindingMetadata{
+			ExpiresAt:   "2100-01-05T12:12:12.0Z",
+			RenewBefore: "2100-01-01T12:12:12.0Z",
 		},
 	}
 }
@@ -208,6 +240,14 @@ func TestBind(t *testing.T) {
 				body:   successBindResponseBody,
 			},
 			expectedResponse: successBindResponse(),
+		},
+		{
+			name: "success - metadata",
+			httpReaction: httpReaction{
+				status: http.StatusOK,
+				body:   successBindResponseBodyWithMetadata,
+			},
+			expectedResponse: successBindResponseWithMetadata(),
 		},
 		{
 			name:    "success - asynchronous",
