@@ -52,12 +52,43 @@ const successProvisionResponseBody = `{
   "dashboard_url": "https://example.com/dashboard"
 }`
 
+const successProvisionResponseBodyWithMetadata = `{
+    "dashboard_url": "https://example.com/dashboard",
+	"metadata": {
+	  "labels": {
+	  	"key1": "value1",
+		"key2": "value2"
+	  },
+	  "attributes": {
+        "broker.generated.attr1": "value1",
+        "broker.generated.attr2": "value2"
+      }
+	}
+  }`
+
 var testDashboardURL = "https://example.com/dashboard"
 var testOperation OperationKey = "test-operation-key"
+var metadata = ServiceInstanceMetadata{
+	Labels: map[string]interface{}{
+		"key1": "value1",
+		"key2": "value2",
+	},
+	Attributes: map[string]interface{}{
+		"broker.generated.attr1": "value1",
+		"broker.generated.attr2": "value2",
+	},
+}
 
 func successProvisionResponse() *ProvisionResponse {
 	return &ProvisionResponse{
 		DashboardURL: &testDashboardURL,
+	}
+}
+
+func successProvisionResponseWithMetadata() *ProvisionResponse {
+	return &ProvisionResponse{
+		DashboardURL: &testDashboardURL,
+		Metadata:     &metadata,
 	}
 }
 
@@ -112,6 +143,14 @@ func TestProvisionInstance(t *testing.T) {
 				body:   successProvisionResponseBody,
 			},
 			expectedResponse: successProvisionResponse(),
+		},
+		{
+			name: "success - ok with metadata",
+			httpReaction: httpReaction{
+				status: http.StatusOK,
+				body:   successProvisionResponseBodyWithMetadata,
+			},
+			expectedResponse: successProvisionResponseWithMetadata(),
 		},
 		{
 			name:    "success - asynchronous",

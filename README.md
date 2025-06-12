@@ -43,6 +43,12 @@ This client library supports the following versions of the
 - [v2.12](https://github.com/openservicebrokerapi/servicebroker/tree/v2.12)
 - [v2.11](https://github.com/openservicebrokerapi/servicebroker/tree/v2.11)
 
+Development to support the following versions is ongoing:
+
+- [v2.17](https://github.com/openservicebrokerapi/servicebroker/tree/v2.17)
+- [v2.16](https://github.com/openservicebrokerapi/servicebroker/tree/v2.16)
+- [v2.15](https://github.com/openservicebrokerapi/servicebroker/tree/v2.15)
+
 Only fields supported by the version configured for a client are
 sent/returned.
 

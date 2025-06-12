@@ -34,11 +34,18 @@ func defaultGetInstanceRequest() *GetInstanceRequest {
 }
 
 func okGetInstanceResponse() *GetInstanceResponse {
-	response := &GetInstanceResponse{
+	return &GetInstanceResponse{
 		ServiceID: "test-service",
 		PlanID:    "test-plan",
 	}
-	return response
+}
+
+func getInstanceResponseWithMetadata() *GetInstanceResponse {
+	return &GetInstanceResponse{
+		ServiceID: "test-service",
+		PlanID:    "test-plan",
+		Metadata:  ServiceInstanceMetadata{},
+	}
 }
 
 func TestGetInstance(t *testing.T) {
