@@ -17,7 +17,7 @@ between an application platform and the Open Service Broker API.
 
 ```go
 import (
-	osb "sigs.k8s.io/go-open-service-broker-client/v2"
+	osb "github.com/orange-cloudfoundry/go-open-service-broker-client/v2"
 )
 
 func GetBrokerCatalog(URL string) (*osb.CatalogResponse, error) {
