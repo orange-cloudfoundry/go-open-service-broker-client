@@ -1,4 +1,4 @@
-module sigs.k8s.io/go-open-service-broker-client/v2
+module github.com/orange-cloudfoundry/go-open-service-broker-client/v2
 
 go 1.22
 
