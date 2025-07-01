@@ -538,6 +538,22 @@ type Endpoint struct {
 	Protocol *EndpointProtocol
 }
 
+// VolumeMountDevice is an object container device type specific details.
+type VolumeMountDevice struct {
+	VolumeID    *string                 `json:"volume_id"`
+	MountConfig *map[string]interface{} `json:"mount_config"`
+}
+
+// VolumeMount is a configuration for remote storage devices to be mounted into
+// an application container filesysytem.
+type VolumeMount struct {
+	Driver       *string            `json:"driver"`
+	ContainerDir *string            `json:"container_dir"`
+	Mode         *string            `json:"mode"`
+	DeviceType   *string            `json:"device_type"`
+	Device       *VolumeMountDevice `json:"device"`
+}
+
 // BindResponse represents a broker's response to a BindRequest.
 type BindResponse struct {
 	// Async requires a client API version >= 2.14.
@@ -560,7 +576,7 @@ type BindResponse struct {
 	// VolumeMounts is an array of configuration string for mounting volumes.
 	// CF-specific. May only be supplied by a service that declares a
 	// requirement for the 'volume_mount' permission.
-	VolumeMounts []interface{} `json:"volume_mounts,omitempty"`
+	VolumeMounts []VolumeMount `json:"volume_mounts,omitempty"`
 	// Endpoints requires alpha features to be enabled
 	//
 	// The network endpoints that the Application uses to connect to the
@@ -640,7 +656,7 @@ type GetBindingResponse struct {
 	// VolumeMounts is an array of configuration string for mounting volumes.
 	// CF-specific. May only be supplied by a service that declares a
 	// requirement for the 'volume_mount' permission.
-	VolumeMounts []interface{} `json:"volume_mounts,omitempty"`
+	VolumeMounts []VolumeMount `json:"volume_mounts,omitempty"`
 	// Parameters is configuration parameters for the binding.
 	Parameters map[string]interface{} `json:"parameters,omitempty"`
 	// Endpoints requires alpha features to be enabled
