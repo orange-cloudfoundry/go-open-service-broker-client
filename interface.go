@@ -86,10 +86,10 @@ type ClientConfiguration struct {
 
 // DefaultClientConfiguration returns a default ClientConfiguration:
 //
-// - latest API version
-// - 60 second timeout (referenced as a typical timeout in the Open Service
-//   Broker API spec)
-// - alpha features disabled
+//   - latest API version
+//   - 60 second timeout (referenced as a typical timeout in the Open Service
+//     Broker API spec)
+//   - alpha features disabled
 func DefaultClientConfiguration() *ClientConfiguration {
 	return &ClientConfiguration{
 		APIVersion:          LatestAPIVersion(),
@@ -202,6 +202,10 @@ type Client interface {
 	// binding endpoint
 	// (/v2/service_instances/instance-id/service_bindings/binding-id)
 	GetBinding(r *GetBindingRequest) (*GetBindingResponse, error)
+	// RotateBinding requests the rotation of a binding's credentials.
+	// RotateBinding calls PUT on the Broker's binding endpoint
+	// (/v2/service_instances/instance-id/service_bindings/binding-id).
+	RotateBinding(r *RotateBindingRequest) (*BindResponse, error)
 }
 
 // CreateFunc allows control over which implementation of a Client is
