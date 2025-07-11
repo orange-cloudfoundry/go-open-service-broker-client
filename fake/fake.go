@@ -56,6 +56,7 @@ func NewFakeClient(config FakeClientConfiguration) *FakeClient {
 		BindReaction:                     config.BindReaction,
 		UnbindReaction:                   config.UnbindReaction,
 		GetBindingReaction:               config.GetBindingReaction,
+		RotateBindingReaction:            config.RotateBindingReaction,
 	}
 }
 
@@ -72,6 +73,7 @@ type FakeClientConfiguration struct {
 	BindReaction                     BindReactionInterface
 	UnbindReaction                   UnbindReactionInterface
 	GetBindingReaction               GetBindingReactionInterface
+	RotateBindingReaction            RotateBindingReactionInterface
 }
 
 // Action is a record of a method call on the FakeClient.
@@ -96,6 +98,7 @@ const (
 	Bind                     ActionType = "Bind"
 	Unbind                   ActionType = "Unbind"
 	GetBinding               ActionType = "GetBinding"
+	RotateBinding            ActionType = "RotateBinding"
 )
 
 // FakeClient is a fake implementation of the v2.Client interface. It records
@@ -114,6 +117,7 @@ type FakeClient struct {
 	BindReaction                     BindReactionInterface
 	UnbindReaction                   UnbindReactionInterface
 	GetBindingReaction               GetBindingReactionInterface
+	RotateBindingReaction            RotateBindingReactionInterface
 
 	sync.Mutex
 	actions []Action
@@ -272,6 +276,20 @@ func (c *FakeClient) GetBinding(*v2.GetBindingRequest) (*v2.GetBindingResponse, 
 
 	if c.GetBindingReaction != nil {
 		return c.GetBindingReaction.react()
+	}
+
+	return nil, UnexpectedActionError()
+}
+
+// RotateBinding implements the Client.RotateBinding method for the FakeClient.
+func (c *FakeClient) RotateBinding(r *v2.RotateBindingRequest) (*v2.BindResponse, error) {
+	c.Mutex.Lock()
+	defer c.Mutex.Unlock()
+
+	c.actions = append(c.actions, Action{Type: GetBinding})
+
+	if c.GetBindingReaction != nil {
+		return c.RotateBindingReaction.react(r)
 	}
 
 	return nil, UnexpectedActionError()
@@ -526,6 +544,29 @@ func (r DynamicGetBindingReaction) react() (*v2.GetBindingResponse, error) {
 
 func strPtr(s string) *string {
 	return &s
+}
+
+// GetBindingReactionInterface defines the reaction to GetBinding requests.
+type RotateBindingReactionInterface interface {
+	react(_ *v2.RotateBindingRequest) (*v2.BindResponse, error)
+}
+
+type RotateBindingReaction struct {
+	Response *v2.BindResponse
+	Error    error
+}
+
+func (r *RotateBindingReaction) react(_ *v2.RotateBindingRequest) (*v2.BindResponse, error) {
+	if r == nil {
+		return nil, UnexpectedActionError()
+	}
+	return r.Response, r.Error
+}
+
+type DynamicRotateBindingReaction func(_ *v2.RotateBindingRequest) (*v2.BindResponse, error)
+
+func (r DynamicRotateBindingReaction) react(req *v2.RotateBindingRequest) (*v2.BindResponse, error) {
+	return r(req)
 }
 
 // AsyncRequiredError returns error for required asynchronous operations.
