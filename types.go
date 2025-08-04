@@ -533,9 +533,9 @@ const (
 
 // Endpoint contains data describing the service endpoints
 type Endpoint struct {
-	Host     string   `json:"host"`
-	Ports    []uint16 `json:"ports"`
-	Protocol *EndpointProtocol
+	Host     string            `json:"host"`
+	Ports    []uint16          `json:"ports"`
+	Protocol *EndpointProtocol `json:"protocol,omitempty"`
 }
 
 // VolumeMountDevice is an object container device type specific details.
@@ -576,7 +576,7 @@ type BindResponse struct {
 	// VolumeMounts is an array of configuration string for mounting volumes.
 	// CF-specific. May only be supplied by a service that declares a
 	// requirement for the 'volume_mount' permission.
-	VolumeMounts []VolumeMount `json:"volume_mounts,omitempty"`
+	VolumeMounts *[]VolumeMount `json:"volume_mounts,omitempty"`
 	// Endpoints requires alpha features to be enabled
 	//
 	// The network endpoints that the Application uses to connect to the
@@ -656,7 +656,7 @@ type GetBindingResponse struct {
 	// VolumeMounts is an array of configuration string for mounting volumes.
 	// CF-specific. May only be supplied by a service that declares a
 	// requirement for the 'volume_mount' permission.
-	VolumeMounts []VolumeMount `json:"volume_mounts,omitempty"`
+	VolumeMounts *[]VolumeMount `json:"volume_mounts,omitempty"`
 	// Parameters is configuration parameters for the binding.
 	Parameters map[string]interface{} `json:"parameters,omitempty"`
 	// Endpoints requires alpha features to be enabled

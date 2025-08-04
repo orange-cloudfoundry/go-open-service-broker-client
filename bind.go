@@ -37,7 +37,7 @@ type bindSuccessResponseBody struct {
 	Credentials     map[string]interface{} `json:"credentials"`
 	SyslogDrainURL  *string                `json:"syslog_drain_url"`
 	RouteServiceURL *string                `json:"route_service_url"`
-	VolumeMounts    []VolumeMount          `json:"volume_mounts"`
+	VolumeMounts    *[]VolumeMount         `json:"volume_mounts"`
 	Endpoints       *[]Endpoint            `json:"endpoints"`
 	Metadata        *BindingMetadata       `json:"metadata,omitempty"`
 	Operation       *string                `json:"operation"`
