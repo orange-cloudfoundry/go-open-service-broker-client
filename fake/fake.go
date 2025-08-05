@@ -288,7 +288,7 @@ func (c *FakeClient) RotateBinding(r *v2.RotateBindingRequest) (*v2.BindResponse
 
 	c.actions = append(c.actions, Action{Type: GetBinding})
 
-	if c.GetBindingReaction != nil {
+	if c.RotateBindingReaction != nil {
 		return c.RotateBindingReaction.react(r)
 	}
 
