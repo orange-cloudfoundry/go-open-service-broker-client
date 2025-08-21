@@ -253,3 +253,20 @@ func IsAsyncBindingOperationsNotAllowedError(err error) bool {
 	_, ok := err.(AsyncBindingOperationsNotAllowedError)
 	return ok
 }
+
+// RotateBindingNotAllowedError is an error type signifying thatbinding rotation
+// operations are not allowed for this client.
+type RotateBindingNotAllowedError struct {
+	reason string
+}
+
+func (e RotateBindingNotAllowedError) Error() string {
+	return fmt.Sprintf("RotateBinding operations are not allowed: %s", e.reason)
+}
+
+// IsRotateBindingNotAllowedError returns whether the error represents binding rotation
+// operations not being allowed for this client.
+func IsRotateBindingNotAllowedError(err error) bool {
+	_, ok := err.(RotateBindingNotAllowedError)
+	return ok
+}
