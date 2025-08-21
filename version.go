@@ -45,7 +45,7 @@ func (v APIVersion) IsLessThan(other APIVersion) bool {
 // LatestAPIVersion returns the latest supported API version in the current
 // release of this library.
 func LatestAPIVersion() APIVersion {
-	return Version2_14()
+	return Version2_17()
 }
 
 // APIVersions returns a list of the APIVersions supported by this library, with
@@ -56,6 +56,9 @@ func APIVersions() []APIVersion {
 		Version2_12(),
 		Version2_13(),
 		Version2_14(),
+		Version2_15(),
+		Version2_16(),
+		Version2_17(),
 	}
 }
 
