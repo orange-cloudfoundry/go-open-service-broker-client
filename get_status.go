@@ -21,21 +21,10 @@ import (
 	"net/http"
 )
 
-func (c *client) GetBinding(r *GetBindingRequest) (*GetBindingResponse, error) {
-	if err := c.validateClientVersionIsAtLeast(Version2_14()); err != nil {
-		return nil, GetBindingNotAllowedError{
-			reason: err.Error(),
-		}
-	}
+func (c *client) GetStatus() (*GetStatusResponse, error) {
+	fullURL := fmt.Sprintf(statusURL, c.URL)
 
-	fullURL := fmt.Sprintf(bindingURLFmt, c.URL, r.InstanceID, r.BindingID)
-
-	params := map[string]string{
-		"service_id": r.ServiceID,
-		"plan_id":    r.PlanID,
-	}
-
-	response, err := c.prepareAndDo(http.MethodGet, fullURL, params, nil /* request body */, nil /* originating identity */)
+	response, err := c.prepareAndDo(http.MethodGet, fullURL, nil /* params */, nil /* request body */, nil /* originating identity */)
 	if err != nil {
 		return nil, err
 	}
@@ -47,16 +36,12 @@ func (c *client) GetBinding(r *GetBindingRequest) (*GetBindingResponse, error) {
 
 	switch response.StatusCode {
 	case http.StatusOK:
-		userResponse := &GetBindingResponse{}
-		if err := c.unmarshalResponse(response, userResponse); err != nil {
+		statusResponse := &GetStatusResponse{}
+		if err := c.unmarshalResponse(response, statusResponse); err != nil {
 			return nil, HTTPStatusCodeError{StatusCode: response.StatusCode, ResponseError: err}
 		}
 
-		if !c.EnableAlphaFeatures {
-			userResponse.Endpoints = nil
-		}
-
-		return userResponse, nil
+		return statusResponse, nil
 	default:
 		return nil, c.handleFailureResponse(response)
 	}

@@ -370,6 +370,10 @@ type DeprovisionRequest struct {
 type GetInstanceRequest struct {
 	// InstanceID is the ID of the instance
 	InstanceID string `json:"instance_id"`
+	// ServiceID is the ID of the service
+	ServiceID string `json:"service_id"`
+	// PlanID is the ID of the service
+	PlanID string `json:"plan_id"`
 }
 
 // GetInstanceResponse is sent as the response to doing a GET on a particular
@@ -637,6 +641,10 @@ type GetBindingRequest struct {
 	InstanceID string `json:"instance_id"`
 	// BindingID is the ID of the binding to delete.
 	BindingID string `json:"binding_id"`
+	// Service ID is the ID of the Service ID
+	ServiceID string `json:"service_id"`
+	// Plan ID is the id of the Plan ID
+	PlanID string `json:"plan_id"`
 }
 
 // GetBindingResponse is sent as the response to doing a GET on a particular
@@ -688,4 +696,10 @@ type RotateBindingRequest struct {
 	// OriginatingIdentity is the identity on the platform of the user making
 	// this request.
 	OriginatingIdentity *OriginatingIdentity `json:"originatingIdentity,omitempty"`
+}
+
+type GetStatusRequest struct{}
+
+type GetStatusResponse struct {
+	Status string `json:"status"`
 }

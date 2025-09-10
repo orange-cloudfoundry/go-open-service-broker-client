@@ -57,6 +57,7 @@ func NewFakeClient(config FakeClientConfiguration) *FakeClient {
 		UnbindReaction:                   config.UnbindReaction,
 		GetBindingReaction:               config.GetBindingReaction,
 		RotateBindingReaction:            config.RotateBindingReaction,
+		StatusReaction:                   config.StatusReaction,
 	}
 }
 
@@ -74,6 +75,7 @@ type FakeClientConfiguration struct {
 	UnbindReaction                   UnbindReactionInterface
 	GetBindingReaction               GetBindingReactionInterface
 	RotateBindingReaction            RotateBindingReactionInterface
+	StatusReaction                   StatusReaction
 }
 
 // Action is a record of a method call on the FakeClient.
@@ -99,6 +101,7 @@ const (
 	Unbind                   ActionType = "Unbind"
 	GetBinding               ActionType = "GetBinding"
 	RotateBinding            ActionType = "RotateBinding"
+	Status                   ActionType = "Status"
 )
 
 // FakeClient is a fake implementation of the v2.Client interface. It records
@@ -118,6 +121,7 @@ type FakeClient struct {
 	UnbindReaction                   UnbindReactionInterface
 	GetBindingReaction               GetBindingReactionInterface
 	RotateBindingReaction            RotateBindingReactionInterface
+	StatusReaction                   StatusReactionInterface
 
 	sync.Mutex
 	actions []Action
@@ -290,6 +294,20 @@ func (c *FakeClient) RotateBinding(r *v2.RotateBindingRequest) (*v2.BindResponse
 
 	if c.RotateBindingReaction != nil {
 		return c.RotateBindingReaction.react(r)
+	}
+
+	return nil, UnexpectedActionError()
+}
+
+// GetStatus implements the Client.GetStatus method for the FakeClient.
+func (c *FakeClient) GetStatus() (*v2.GetStatusResponse, error) {
+	c.Mutex.Lock()
+	defer c.Mutex.Unlock()
+
+	c.actions = append(c.actions, Action{Type: Status})
+
+	if c.StatusReaction != nil {
+		return c.StatusReaction.react()
 	}
 
 	return nil, UnexpectedActionError()
@@ -567,6 +585,25 @@ type DynamicRotateBindingReaction func(_ *v2.RotateBindingRequest) (*v2.BindResp
 
 func (r DynamicRotateBindingReaction) react(req *v2.RotateBindingRequest) (*v2.BindResponse, error) {
 	return r(req)
+}
+
+type StatusReactionInterface interface {
+	react() (*v2.GetStatusResponse, error)
+}
+
+type StatusReaction struct {
+	Response *v2.GetStatusResponse
+	Error    error
+}
+
+func (r StatusReaction) react() (*v2.GetStatusResponse, error) {
+	return r.Response, r.Error
+}
+
+type DynamicStatusReaction func() (*v2.GetStatusResponse, error)
+
+func (r DynamicStatusReaction) react() (*v2.GetStatusResponse, error) {
+	return r()
 }
 
 // AsyncRequiredError returns error for required asynchronous operations.
