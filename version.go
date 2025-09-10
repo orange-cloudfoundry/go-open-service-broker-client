@@ -48,17 +48,17 @@ func LatestAPIVersion() APIVersion {
 	return Version2_17()
 }
 
-// APIVersions returns a list of the APIVersions supported by this library, with
+// APIVersions returns a map of the APIVersions supported by this library, with
 // no guarantees of ordering.
-func APIVersions() []APIVersion {
-	return []APIVersion{
-		Version2_11(),
-		Version2_12(),
-		Version2_13(),
-		Version2_14(),
-		Version2_15(),
-		Version2_16(),
-		Version2_17(),
+func APIVersions() map[string]APIVersion {
+	return map[string]APIVersion {
+		internalAPIVersion2_11: Version2_11(),
+		internalAPIVersion2_12: Version2_12(),
+		internalAPIVersion2_13: Version2_13(),
+		internalAPIVersion2_14: Version2_14(),
+		internalAPIVersion2_15: Version2_15(),
+		internalAPIVersion2_16: Version2_16(),
+		internalAPIVersion2_17: Version2_17(),
 	}
 }
 
