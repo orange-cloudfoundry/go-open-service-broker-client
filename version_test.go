@@ -51,7 +51,7 @@ func TestIsLessThan(t *testing.T) {
 }
 
 func TestLatestAPIVersion(t *testing.T) {
-	if LatestAPIVersion() != Version2_14() {
-		t.Error("Unexpected Latest API Version--expected 2.14")
+	if LatestAPIVersion() != Version2_17() {
+		t.Error("Unexpected Latest API Version--expected 2.17")
 	}
 }

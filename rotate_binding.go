@@ -30,6 +30,11 @@ type rotateBindingRequestBody struct {
 }
 
 func (c *client) RotateBinding(r *RotateBindingRequest) (*BindResponse, error) {
+	if err := c.validateClientVersionIsAtLeast(Version2_17()); err != nil {
+		return nil, RotateBindingNotAllowedError{
+			reason: err.Error(),
+		}
+	}
 	if err := validateRotateBindingRequest(r); err != nil {
 		return nil, err
 	}

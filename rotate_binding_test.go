@@ -93,7 +93,13 @@ func TestRotateBinding(t *testing.T) {
 		expectedErr         error
 	}{
 		{
-			name: "invalid request",
+			name:               "unsupported API version",
+			version:            Version2_16(),
+			expectedErrMessage: "RotateBinding operations are not allowed: operation not allowed: must have API version >= 2.17. Current: 2.16",
+		},
+		{
+			name:    "invalid request",
+			version: Version2_17(),
 			request: func() *RotateBindingRequest {
 				r := defaultRotateBindingRequest()
 				r.InstanceID = ""
@@ -102,7 +108,8 @@ func TestRotateBinding(t *testing.T) {
 			expectedErrMessage: "instanceID is required",
 		},
 		{
-			name: "success - created",
+			name:    "success - created",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				status: http.StatusCreated,
 				body:   successRotateBindingResponseBody,
@@ -111,7 +118,7 @@ func TestRotateBinding(t *testing.T) {
 		},
 		{
 			name:    "success - asynchronous",
-			version: Version2_14(),
+			version: Version2_17(),
 			request: defaultAsyncRotateBindingRequest(),
 			httpChecks: httpChecks{
 				params: map[string]string{
@@ -125,14 +132,16 @@ func TestRotateBinding(t *testing.T) {
 			expectedResponse: successRotatebindingResponseAsync(),
 		},
 		{
-			name: "http error",
+			name:    "http error",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				err: fmt.Errorf("http error"),
 			},
 			expectedErrMessage: "http error",
 		},
 		{
-			name: "202 with no async support",
+			name:    "202 with no async support",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				status: http.StatusAccepted,
 				body:   successAsyncBindResponseBody,
@@ -140,7 +149,8 @@ func TestRotateBinding(t *testing.T) {
 			expectedErrMessage: "Status: 202; ErrorMessage: <nil>; Description: <nil>; ResponseError: <nil>",
 		},
 		{
-			name: "200 with malformed response",
+			name:    "200 with malformed response",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				status: http.StatusOK,
 				body:   malformedResponse,
@@ -148,7 +158,8 @@ func TestRotateBinding(t *testing.T) {
 			expectedErrMessage: "Status: 200; ErrorMessage: <nil>; Description: <nil>; ResponseError: unexpected end of JSON input",
 		},
 		{
-			name: "500 with malformed response",
+			name:    "500 with malformed response",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				status: http.StatusInternalServerError,
 				body:   malformedResponse,
@@ -156,7 +167,8 @@ func TestRotateBinding(t *testing.T) {
 			expectedErrMessage: "Status: 500; ErrorMessage: <nil>; Description: <nil>; ResponseError: unexpected end of JSON input",
 		},
 		{
-			name: "500 with conventional failure response",
+			name:    "500 with conventional failure response",
+			version: Version2_17(),
 			httpReaction: httpReaction{
 				status: http.StatusInternalServerError,
 				body:   conventionalFailureResponseBody,
