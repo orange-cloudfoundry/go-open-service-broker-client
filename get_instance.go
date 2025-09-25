@@ -30,7 +30,12 @@ func (c *client) GetInstance(r *GetInstanceRequest) (*GetInstanceResponse, error
 
 	fullURL := fmt.Sprintf(serviceInstanceURLFmt, c.URL, r.InstanceID)
 
-	response, err := c.prepareAndDo(http.MethodGet, fullURL, nil /* params */, nil /* request body */, nil /* originating identity */)
+	params := map[string]string{
+		"service_id": r.ServiceID,
+		"plan_id":    r.PlanID,
+	}
+
+	response, err := c.prepareAndDo(http.MethodGet, fullURL, params, nil /* request body */, nil /* originating identity */)
 	if err != nil {
 		return nil, err
 	}

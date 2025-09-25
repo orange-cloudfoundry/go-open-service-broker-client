@@ -370,6 +370,10 @@ type DeprovisionRequest struct {
 type GetInstanceRequest struct {
 	// InstanceID is the ID of the instance
 	InstanceID string `json:"instance_id"`
+	// ServiceID is the ID of the service
+	ServiceID string `json:"service_id"`
+	// PlanID is the ID of the service
+	PlanID string `json:"plan_id"`
 }
 
 // GetInstanceResponse is sent as the response to doing a GET on a particular

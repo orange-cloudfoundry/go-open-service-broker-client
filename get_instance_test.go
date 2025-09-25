@@ -30,6 +30,8 @@ const okInstanceBytes = `{
 func defaultGetInstanceRequest() *GetInstanceRequest {
 	return &GetInstanceRequest{
 		InstanceID: testInstanceID,
+		ServiceID:  testServiceID,
+		PlanID:     testPlanID,
 	}
 }
 
