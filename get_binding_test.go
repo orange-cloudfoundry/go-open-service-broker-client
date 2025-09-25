@@ -52,6 +52,8 @@ func defaultGetBindingRequest() *GetBindingRequest {
 	return &GetBindingRequest{
 		InstanceID: testInstanceID,
 		BindingID:  testBindingID,
+		ServiceID:  testServiceID,
+		PlanID:     testPlanID,
 	}
 }
 

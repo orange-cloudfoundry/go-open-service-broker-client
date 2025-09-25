@@ -641,6 +641,10 @@ type GetBindingRequest struct {
 	InstanceID string `json:"instance_id"`
 	// BindingID is the ID of the binding to delete.
 	BindingID string `json:"binding_id"`
+	// Service ID is the ID of the Service ID
+	ServiceID string `json:"service_id"`
+	// Plan ID is the id of the Plan ID
+	PlanID string `json:"plan_id"`
 }
 
 // GetBindingResponse is sent as the response to doing a GET on a particular
