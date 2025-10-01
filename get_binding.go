@@ -30,7 +30,12 @@ func (c *client) GetBinding(r *GetBindingRequest) (*GetBindingResponse, error) {
 
 	fullURL := fmt.Sprintf(bindingURLFmt, c.URL, r.InstanceID, r.BindingID)
 
-	response, err := c.prepareAndDo(http.MethodGet, fullURL, nil /* params */, nil /* request body */, nil /* originating identity */)
+	params := map[string]string{
+		"service_id": r.ServiceID,
+		"plan_id":    r.PlanID,
+	}
+
+	response, err := c.prepareAndDo(http.MethodGet, fullURL, params, nil /* request body */, nil /* originating identity */)
 	if err != nil {
 		return nil, err
 	}
