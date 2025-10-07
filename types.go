@@ -697,3 +697,9 @@ type RotateBindingRequest struct {
 	// this request.
 	OriginatingIdentity *OriginatingIdentity `json:"originatingIdentity,omitempty"`
 }
+
+type GetStatusRequest struct{}
+
+type GetStatusResponse struct {
+	Status string `json:"status"`
+}
