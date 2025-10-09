@@ -52,6 +52,7 @@ const (
 	lastOperationURLFmt        = "%s/v2/service_instances/%s/last_operation"
 	bindingLastOperationURLFmt = "%s/v2/service_instances/%s/service_bindings/%s/last_operation"
 	bindingURLFmt              = "%s/v2/service_instances/%s/service_bindings/%s"
+	statusURL                  = "%s/status"
 )
 
 // NewClient is a CreateFunc for creating a new functional Client and

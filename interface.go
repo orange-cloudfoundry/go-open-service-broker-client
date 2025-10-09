@@ -206,6 +206,7 @@ type Client interface {
 	// RotateBinding calls PUT on the Broker's binding endpoint
 	// (/v2/service_instances/instance-id/service_bindings/binding-id).
 	RotateBinding(r *RotateBindingRequest) (*BindResponse, error)
+	GetStatus() (*GetStatusResponse, error)
 }
 
 // CreateFunc allows control over which implementation of a Client is
