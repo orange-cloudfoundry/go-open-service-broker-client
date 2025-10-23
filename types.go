@@ -703,3 +703,15 @@ type GetStatusRequest struct{}
 type GetStatusResponse struct {
 	Status string `json:"status"`
 }
+
+// OSBAsyncResponse defines the common behavior for asynchronous responses
+// from the Open Service Broker API. Any OSB response type that may be
+// handled asynchronously should implement this interface.
+type OSBAsyncResponse interface {
+	// IsAsync returns true if the broker is handling the request asynchronously.
+	IsAsync() bool
+	// GetOperationKey returns the broker-supplied identifier for the asynchronous operation.
+	GetOperationKey() *OperationKey
+	// GetDashboardURL returns the dashboard URL if available.
+	GetDashboardURL() *string
+}
