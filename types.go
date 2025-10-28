@@ -474,6 +474,7 @@ const (
 	StateInProgress LastOperationState = "in progress"
 	StateSucceeded  LastOperationState = "succeeded"
 	StateFailed     LastOperationState = "failed"
+	StateDeleting   LastOperationState = "deleting"
 )
 
 type BindingMetadata struct {
